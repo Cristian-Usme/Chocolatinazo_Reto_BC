@@ -1,0 +1,5 @@
+jwt:
+  secret: "TestSecretKeyForApiRestModuleTestsThatIsLongEnoughForHS256"
+  expiration: 86400000
+cors:
+  allowed-origins: "http://localhost:8080"

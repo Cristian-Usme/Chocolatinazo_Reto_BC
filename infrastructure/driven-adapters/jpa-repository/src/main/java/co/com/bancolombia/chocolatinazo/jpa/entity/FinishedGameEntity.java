@@ -36,9 +36,9 @@ public class FinishedGameEntity {
     @Column(name = "chocolatina_price", nullable = false)
     private BigDecimal chocolatinaPrice;
 
-    @Column(name = "total_paid", nullable = false, precision = 10, scale = 2)
+    @Column(name = "total_paid", nullable = false)
     private BigDecimal totalPaid;
 
-    @Column(name = "finished_at", nullable = false, precision = 10, scale = 2)
+    @Column(name = "finished_at", nullable = false)
     private LocalDateTime finishedAt;
 }

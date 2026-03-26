@@ -34,6 +34,6 @@ cors:
   allowed-origins: "http://localhost:4200,http://localhost:8080"
 
 jwt:
-  secret: "ChocolatinazoPasswordChallengeBC"
+  secret: "TuClaveSecretaMuyLargaParaElChocolatinazo2026BancolombiaRetoTecnico"
   expiration: 86400000
 

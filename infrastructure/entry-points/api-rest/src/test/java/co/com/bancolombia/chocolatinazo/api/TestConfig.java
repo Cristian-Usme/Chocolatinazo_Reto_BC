@@ -12,10 +12,17 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @EnableAutoConfiguration
 @EnableWebMvc
 @ComponentScan(basePackages = "co.com.bancolombia.chocolatinazo.api",
-        excludeFilters = @ComponentScan.Filter(
-                type = FilterType.ASSIGNABLE_TYPE,
-                classes = CorsConfig.class
-        ))
+        excludeFilters = {
+                @ComponentScan.Filter(
+                        type = FilterType.ASSIGNABLE_TYPE,
+                        classes = CorsConfig.class
+        ),
+                @ComponentScan.Filter(
+                        type =FilterType.REGEX,
+                        pattern = ".*\\.security\\..*"
+                )
+
+        })
 @Import(ApiRest.class)
 public class TestConfig {
 }
