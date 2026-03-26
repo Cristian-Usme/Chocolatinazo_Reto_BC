@@ -15,7 +15,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
         excludeFilters = {
                 @ComponentScan.Filter(
                         type = FilterType.ASSIGNABLE_TYPE,
-                        classes = CorsConfig.class
+                        classes = {CorsConfig.class, AuthController.class}
         ),
                 @ComponentScan.Filter(
                         type =FilterType.REGEX,

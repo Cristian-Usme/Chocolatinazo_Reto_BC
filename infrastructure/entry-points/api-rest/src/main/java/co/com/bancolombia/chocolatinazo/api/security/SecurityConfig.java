@@ -3,13 +3,18 @@ package co.com.bancolombia.chocolatinazo.api.security;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -51,6 +56,8 @@ public class SecurityConfig {
                         // H2 Console
                         .requestMatchers("/h2/**").permitAll()
 
+                        .requestMatchers("/error").permitAll()
+
                         // Actuator health endpoint
                         .requestMatchers("/actuator/**").permitAll()
 
@@ -61,11 +68,42 @@ public class SecurityConfig {
                 // Stateless sessions — JWT replaces HTTP sessions
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Return explicit status codes for authn/authz errors in REST APIs
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(authenticationEntryPoint())
+                        .accessDeniedHandler(accessDeniedHandler()))
 
                 // Add our JWT filter before Spring's default username/password filter
                 .addFilterBefore(jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    @Bean
+    public WebSecurityCustomizer webSecurityCustomizer() {
+        return web -> web.ignoring().requestMatchers("/auth/**");
+    }
+
+    @Bean
+    public AuthenticationEntryPoint authenticationEntryPoint() {
+        return (request, response, authException) ->
+                response.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized");
+    }
+
+    @Bean
+    public AccessDeniedHandler accessDeniedHandler() {
+        return (request, response, accessDeniedException) -> {
+            Authentication authentication = org.springframework.security.core.context.SecurityContextHolder
+                    .getContext()
+                    .getAuthentication();
+
+            if (authentication == null || authentication instanceof AnonymousAuthenticationToken) {
+                response.sendError(HttpStatus.UNAUTHORIZED.value(), "Unauthorized");
+                return;
+            }
+
+            response.sendError(HttpStatus.FORBIDDEN.value(), "Forbidden");
+        };
     }
 }
