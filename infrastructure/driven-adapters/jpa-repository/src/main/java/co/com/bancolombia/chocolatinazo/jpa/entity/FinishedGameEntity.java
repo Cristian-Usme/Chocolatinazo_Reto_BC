@@ -21,7 +21,6 @@ import java.util.UUID;
 public class FinishedGameEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column(name = "loser_id", nullable = false)
